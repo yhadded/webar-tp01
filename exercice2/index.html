@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Exercice 2 - AR.js + Marqueur Hiro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- A-Frame -->
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <!-- AR.js pour A-Frame : ajoute la détection de marqueurs via la caméra -->
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+</head>
+<body style="margin: 0; overflow: hidden;">
+
+  <!--
+    L'attribut "arjs" transforme la scène A-Frame en scène de réalité augmentée :
+    - sourceType: webcam  -> utilise la caméra du téléphone/ordinateur comme fond vidéo
+    - debugUIEnabled: false -> masque l'interface de debug d'AR.js
+    - detectionMode: mono  -> mode de détection standard pour les marqueurs image (Hiro)
+  -->
+  <a-scene
+    vr-mode-ui="enabled: false"
+    embedded
+    arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono;">
+
+    <!-- ===== Marqueur Hiro =====
+         preset="hiro" charge directement le motif du marqueur Hiro fourni par AR.js.
+         Tout ce qui est placé À L'INTÉRIEUR de <a-marker> n'apparaît que lorsque
+         la caméra détecte ce marqueur. -->
+    <a-marker preset="hiro">
+
+      <!-- Boîte semi-transparente : opacity < 1 + transparent="true" -->
+      <a-box
+        position="0 0.5 0"
+        color="#4CC9F0"
+        opacity="0.6"
+        transparent="true"
+        depth="1" height="1" width="1"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 4000; easing: linear">
+      </a-box>
+
+    </a-marker>
+
+    <!-- Caméra AR : sa position/rotation est pilotée automatiquement par AR.js
+         en fonction de la position détectée du marqueur, donc pas de position fixe ici -->
+    <a-entity camera></a-entity>
+
+  </a-scene>
+
+</body>
+</html>

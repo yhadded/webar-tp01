@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Exercice 4 - Marqueur personnalisé</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+</head>
+<body style="margin: 0; overflow: hidden;">
+
+  <a-scene
+    vr-mode-ui="enabled: false"
+    embedded
+    arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono;">
+
+    <!-- ===== Marqueur personnalisé =====
+         type="pattern" + url="..." : au lieu du preset "hiro" fourni par AR.js,
+         on pointe vers NOTRE PROPRE fichier .patt (généré à partir de l'image
+         choisie avec l'outil marker-training/generator.html du sujet).
+
+         -> Voir assets/README.txt pour la procédure de génération. -->
+    <a-marker type="pattern" url="assets/custom-marker.patt">
+
+      <!-- Objet 3D différent de la boîte : un "torus-knot" (nœud torique),
+           avec une rotation continue pour bien voir sa géométrie -->
+      <a-torus-knot
+        position="0 0.5 0"
+        radius="0.4"
+        radius-tubular="0.08"
+        color="#F72585"
+        animation="property: rotation; to: 360 360 0; loop: true; dur: 6000; easing: linear">
+      </a-torus-knot>
+
+    </a-marker>
+
+    <a-entity camera></a-entity>
+
+  </a-scene>
+
+</body>
+</html>

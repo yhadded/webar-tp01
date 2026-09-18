@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Exercice 6 - UI DOM overlay</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+
+  <style>
+    html, body { margin: 0; overflow: hidden; }
+
+    /* ===== UI DOM overlay =====
+       C'est du HTML/CSS classique, PAR-DESSUS le <canvas> WebGL d'A-Frame
+       (position: fixed + z-index élevé). A-Frame ne sait pas que ça existe :
+       c'est nous qui l'affichons/masquons en JS via les events markerFound/Lost. */
+    #ar-ui {
+      display: none; /* caché par défaut : visible seulement si le marqueur est détecté */
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      z-index: 999;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 16px;
+      box-sizing: border-box;
+      background: rgba(0, 0, 0, 0.55);
+      font-family: sans-serif;
+      color: white;
+    }
+
+    #ar-ui.visible { display: flex; }
+
+    #ar-ui .row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    #ar-ui input[type="range"] { flex: 1; }
+
+    .color-swatch {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px solid white;
+      cursor: pointer;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <a-scene
+    vr-mode-ui="enabled: false"
+    embedded
+    arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono;">
+
+    <a-marker id="hiroMarker" preset="hiro">
+      <a-box
+        id="uiBox"
+        position="0 0.5 0"
+        color="#4CC9F0"
+        depth="1" height="1" width="1">
+      </a-box>
+    </a-marker>
+
+    <a-entity camera></a-entity>
+
+  </a-scene>
+
+  <!-- ===== L'overlay HTML ===== -->
+  <div id="ar-ui">
+    <div class="row">
+      <label for="sizeSlider">Taille</label>
+      <input id="sizeSlider" type="range" min="0.1" max="3.0" step="0.1" value="1" />
+      <span id="sizeValue">1.0</span>
+    </div>
+    <div class="row" style="justify-content: center;">
+      <button class="color-swatch" data-color="#E63946" style="background:#E63946" aria-label="Rouge"></button>
+      <button class="color-swatch" data-color="#06D6A0" style="background:#06D6A0" aria-label="Vert"></button>
+      <button class="color-swatch" data-color="#457B9D" style="background:#457B9D" aria-label="Bleu"></button>
+    </div>
+  </div>
+
+  <script>
+    const marker = document.querySelector('#hiroMarker');
+    const ui = document.querySelector('#ar-ui');
+    const box = document.querySelector('#uiBox');
+    const slider = document.querySelector('#sizeSlider');
+    const sizeValue = document.querySelector('#sizeValue');
+
+    // ===== Affichage/masquage de l'UI selon la détection du marqueur =====
+    // AR.js émet ces deux events directement sur l'élément <a-marker>.
+    marker.addEventListener('markerFound', () => {
+      ui.classList.add('visible');
+    });
+
+    marker.addEventListener('markerLost', () => {
+      ui.classList.remove('visible');
+    });
+
+    // ===== Slider : change la taille de la boîte en temps réel =====
+    slider.addEventListener('input', (event) => {
+      const size = parseFloat(event.target.value);
+      box.setAttribute('scale', `${size} ${size} ${size}`);
+      sizeValue.textContent = size.toFixed(1);
+    });
+
+    // ===== Palette de couleurs : change la couleur au clic =====
+    document.querySelectorAll('.color-swatch').forEach((button) => {
+      button.addEventListener('click', () => {
+        box.setAttribute('color', button.dataset.color);
+      });
+    });
+  </script>
+
+</body>
+</html>

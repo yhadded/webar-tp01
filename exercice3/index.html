@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Exercice 3 - Interaction clic/tap</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+
+  <script>
+    // ===== Composant personnalisé : réagit au clic (souris) ou au tap (mobile) =====
+    // A-Frame déclenche l'event "click" aussi bien pour un clic souris que pour un
+    // tap tactile dès que l'entité passe par un raycaster/cursor (voir plus bas).
+    AFRAME.registerComponent('tap-color-change', {
+      schema: {
+        colors: { type: 'array', default: ['#4CC9F0', '#F72585', '#FFD60A', '#06D6A0'] }
+      },
+      init: function () {
+        this.colorIndex = 0;
+        this.fast = false;
+        const data = this.data;
+        const el = this.el;
+
+        el.addEventListener('click', () => {
+          // 1) Changer de couleur : on avance dans le tableau de couleurs
+          this.colorIndex = (this.colorIndex + 1) % data.colors.length;
+          el.setAttribute('color', data.colors[this.colorIndex]);
+
+          // 2) Rotation plus rapide : on remplace l'animation de rotation
+          //    par une version avec une durée (dur) plus courte -> tourne plus vite
+          this.fast = !this.fast;
+          el.setAttribute('animation__rotate', {
+            property: 'rotation',
+            to: '0 360 0',
+            loop: true,
+            dur: this.fast ? 800 : 4000,
+            easing: 'linear'
+          });
+
+          // 3) Animation supplémentaire : un petit "pulse" d'échelle au moment du tap
+          el.setAttribute('animation__scale', {
+            property: 'scale',
+            from: '1 1 1',
+            to: '1.4 1.4 1.4',
+            dir: 'alternate',
+            dur: 300,
+            loop: 2
+          });
+        });
+      }
+    });
+  </script>
+</head>
+<body style="margin: 0; overflow: hidden;">
+
+  <a-scene
+    vr-mode-ui="enabled: false"
+    embedded
+    arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono;">
+
+    <a-marker preset="hiro">
+
+      <a-box
+        class="clickable"
+        position="0 0.5 0"
+        color="#4CC9F0"
+        opacity="0.6"
+        transparent="true"
+        depth="1" height="1" width="1"
+        animation__rotate="property: rotation; to: 0 360 0; loop: true; dur: 4000; easing: linear"
+        tap-color-change>
+      </a-box>
+
+    </a-marker>
+
+    <!-- Caméra + curseur :
+         - le curseur suit la souris sur desktop (rayOrigin: mouse) et intercepte
+           aussi les taps tactiles sur mobile
+         - raycaster.objects restreint le raycasting aux éléments .clickable
+           (meilleures perfs, on n'inspecte pas toute la scène) -->
+    <a-entity camera>
+      <a-entity
+        cursor="rayOrigin: mouse; fuse: false"
+        raycaster="objects: .clickable">
+      </a-entity>
+    </a-entity>
+
+  </a-scene>
+
+</body>
+</html>

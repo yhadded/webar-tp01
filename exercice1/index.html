@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Exercice 1 - Scène 3D A-Frame</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- A-Frame : le framework qui fournit les balises <a-scene>, <a-box>, <a-camera>... -->
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+</head>
+<body>
+
+  <!-- <a-scene> est le conteneur racine de toute scène A-Frame (équivalent d'un canvas WebGL/three.js) -->
+  <a-scene background="color: #ECECEC">
+
+    <!-- ===== Le plan (sol) =====
+         a-plane est tourné à plat (rotation -90 sur X) sinon il est vertical par défaut -->
+    <a-plane
+      position="0 0 0"
+      rotation="-90 0 0"
+      width="20"
+      height="20"
+      color="#7BC8A4">
+    </a-plane>
+
+    <!-- ===== Les 3 boîtes =====
+         Elles lévitent à y=2 (2 unités au-dessus du plan qui est à y=0)
+         et sont placées à des positions x/z différentes -->
+    <a-box
+      position="-3 2 0"
+      color="#E63946"
+      width="1.5" height="1.5" depth="1.5">
+    </a-box>
+
+    <a-box
+      position="0 2 -2"
+      color="#457B9D"
+      width="1.5" height="1.5" depth="1.5">
+    </a-box>
+
+    <a-box
+      position="3 2 1"
+      color="#F4A261"
+      width="1.5" height="1.5" depth="1.5">
+    </a-box>
+
+    <!-- ===== La caméra =====
+         Position : 10 unités de hauteur (y=10), 15 unités de distance (z=15)
+         Orientation : inclinée vers le bas pour regarder le centre du plan (0,0,0)
+
+         Calcul de l'angle de tangage (pitch) :
+         angle = atan(hauteur / distance) = atan(10/15) ≈ 33.69°
+         On incline la caméra vers le bas donc rotation.x est négatif. -->
+    <a-entity
+      position="0 10 15"
+      rotation="-33.69 0 0"
+      camera
+      look-controls="enabled: false"
+      wasd-controls="enabled: false">
+    </a-entity>
+
+  </a-scene>
+
+</body>
+</html>
